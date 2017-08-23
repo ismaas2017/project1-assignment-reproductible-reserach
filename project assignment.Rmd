@@ -23,6 +23,7 @@ The variables included in this dataset are:
 **Loading and preprocessing the data**
 
 ```{r read data, echo=TRUE}
+
 data1<-read.csv(file="activity.csv",head=TRUE,sep=",")
 data1$date<-as.Date(data1$date,format="%Y-%m-%d")
 head(data1)
