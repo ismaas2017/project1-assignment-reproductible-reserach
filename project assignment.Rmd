@@ -28,3 +28,18 @@ data1<-read.csv(file="activity.csv",head=TRUE,sep=",")
 data1$date<-as.Date(data1$date,format="%Y-%m-%d")
 head(data1)
 ```
+**What is mean total number of steps taken per day?**
+
+
+```{r total step, echo=TRUE,results='hide'}
+library(dplyr)
+```
+1.
+
+```{r total steps, echo=TRUE}
+data1 %>%select(steps, date) %>% group_by(date) %>%summarise (total=sum(steps,na.rm=TRUE))
+```
+2.
+```{r hist steps, echo=TRUE}
+data1 %>%select(steps, date) %>% group_by(date) %>%summarise(total=sum(steps,na.rm=TRUE))%>%with(hist(total, main="total PM2.5 emission from all sources", xlab="Year", ylab="Total Emissions"))
+```
