@@ -97,3 +97,10 @@ for (i in 1:length(data1_NA$steps)) {
 }
 head(data1_NA)
 ```
+
+Histogram of the total number of steps taken each day after missing values are imputed
+
+```{r hist after replace NA, echo=TRUE,cache=TRUE}
+data1_NA$date <- factor(data1_NA$date)
+data1_NA %>% select(steps,date)%>%group_by(date) %>% summarize(total=sum(steps))%>%with(hist(total, col="red", breaks=20,xlab="Total steps each day",main="Histogram of total steps taken each day"))
+```
