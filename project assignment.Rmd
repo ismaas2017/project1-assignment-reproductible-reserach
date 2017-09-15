@@ -6,7 +6,7 @@ output: html_document
 ### Peer-graded Assignment: Course Project 1 by ISMAIL HASSAN DJILAL
 Introduction
 
-It is now possible to collect a large amount of data about personal movement using activity monitoring devices such as a Fitbit, Nike Fuelband, or Jawbone Up. These type of devices are part of the "quantified self" movement - a group of enthusiasts who take measurements about themselves regularly to improve their health, to find patterns in their behavior, or because they are tech geeks. But these data remain under-utilized both because the raw data are hard to obtain and there is a lack of statistical methods and software for processing and interpreting the data.
+It is now possible to collect a large amount of data about personal movement using activity monitoring devices such as a Fitbit, Nike Fuelband, or Jawbone Up. These type of devices are part of the "quantified self" movement - a group of enthusiasts who take measurements about themselves regularly to improve their health, to find patterns in their behavior, or because they are tech geeks. But these data remain under-utilized both because the data1 data are hard to obtain and there is a lack of statistical methods and software for processing and interpreting the data.
 
 This assignment makes use of data from a personal activity monitoring device. This device collects data at 5 minute intervals through out the day. The data consists of two months of data from an anonymous individual collected during the months of October and November, 2012 and include the number of steps taken in 5 minute intervals each day.
 The data for this assignment can be downloaded from the course web site:
@@ -23,9 +23,13 @@ The variables included in this dataset are:
 **Loading and preprocessing the data**
 
 ```{r read data, echo=TRUE}
+require(stringr)
 
-data1<-read.csv(file="activity.csv",head=TRUE,sep=",")
-data1$date<-as.Date(data1$date,format="%Y-%m-%d")
+data1<-read.csv(file="activity.csv",na.strings="NA",head=TRUE,sep=",")
+data1$interval <- str_pad(as.character(data1$interval), 4, pad="0")
+data1$datetime <- paste(data1$date, data1$interval, sep=" ")
+data1$datetime <- strptime(data1$datetime, "%Y-%m-%d %H%M")
+
 head(data1)
 ```
 **What is mean total number of steps taken per day?**
@@ -41,10 +45,30 @@ data1 %>%select(steps, date) %>% group_by(date) %>%summarise (total=sum(steps,na
 ```
 2.
 ```{r hist steps, echo=TRUE}
-data1 %>%select(steps, date) %>% group_by(date) %>%summarise(total=sum(steps,na.rm=TRUE))%>%with(hist(total, main="total PM2.5 emission from all sources", xlab="Year", ylab="Total Emissions"))
+data1 %>%select(steps, date) %>% group_by(date) %>%summarise(total=sum(steps,na.rm=TRUE))%>%with(hist(total, breaks=20,main="Histogram of the total number of steps taken each day", xlab = "Number of Steps"))
 ```
 3.
 
-```{r mean median, echo=TRUE}
-data1 %>%select(steps, date) %>% group_by(date) %>%summarise(total=sum(steps,na.rm=TRUE),mean=mean(steps,na.rm=TRUE),median=median(steps,na.rm=TRUE))
+```{r mean, echo=TRUE,cache=TRUE}
+p<-data1 %>%select(steps, date) %>% group_by(date) %>%summarise(total=sum(steps,na.rm=TRUE),mean=mean(steps,na.rm=TRUE),median=median(steps,na.rm=TRUE))
+mean(p$total,na.rm=TRUE)
+```
+
+```{r median, echo=TRUE,cache=TRUE}
+p<-data1 %>%select(steps, date) %>% group_by(date) %>%summarise(total=sum(steps,na.rm=TRUE),mean=mean(steps,na.rm=TRUE),median=median(steps,na.rm=TRUE))
+median(p$total,na.rm=TRUE)
+```
+What is the average daily activity pattern?
+```{r average daily activity, echo=TRUE,cache=TRUE}
+data2 <- data1
+data2$datetime <- format(strptime(data2$datetime, "%Y-%m-%d %H:%M:%S"), "%H%M")
+DailyActivity <- data2 %>% group_by(datetime) %>% summarize(avg=mean(steps, na.rm=TRUE))
+DailyActivity$datetime <- strptime(DailyActivity$datetime, "%H%M") ## convert back to time series
+
+plot(DailyActivity$datetime, DailyActivity$avg, type="l",
+     xlab="Time of the day", 
+     ylab="Average steps in 5-min intervals") 
+axis.POSIXct(1, DailyActivity$datetime)
+title(main="Daily activity pattern")
+
 ```
