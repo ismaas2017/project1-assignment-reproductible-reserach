@@ -72,3 +72,10 @@ axis.POSIXct(1, DailyActivity$datetime)
 title(main="Daily activity pattern")
 
 ```
+
+5-min interval with max
+
+```{r 5-min interval with max, echo=TRUE,cache=TRUE}
+DailyActivity$datetime <- as.character(DailyActivity$datetime)
+DailyActivity%>%arrange(desc(avg))%>%head(1)
+```
