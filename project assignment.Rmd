@@ -79,3 +79,21 @@ title(main="Daily activity pattern")
 DailyActivity$datetime <- as.character(DailyActivity$datetime)
 DailyActivity%>%arrange(desc(avg))%>%head(1)
 ```
+
+Replace all NA values
+
+```{r replace NA, echo=TRUE,cache=TRUE}
+
+data1_NA <- data1
+DailyActivity <- mutate(DailyActivity, datetime=format(strptime(DailyActivity$datetime, "%Y-%m-%d %H:%M:%S"), "%H%M"))
+
+
+for (i in 1:length(data1_NA$steps)) {
+        if (is.na(data1_NA$steps[i])) {
+                daily_f <- filter(DailyActivity, datetime==data1_NA$interval[i])
+                data1_NA$steps[i] <- daily_f$avg
+        }
+        data1_NA
+}
+head(data1_NA)
+```
